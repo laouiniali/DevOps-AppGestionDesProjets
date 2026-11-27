@@ -1,0 +1,32 @@
+pipeline {
+    agent any
+
+    triggers {
+        cron('H/2 * * * *')
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Compile') {
+            steps {
+                dir('backend') {
+                    sh 'chmod +x mvnw && ./mvnw -B compile'
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline completed successfully: Git -> Checkout -> Maven Compile -> SUCCESS'
+        }
+        failure {
+            echo 'Pipeline failed. Check the stage logs in Jenkins Console Output.'
+        }
+    }
+}
